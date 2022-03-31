@@ -1,0 +1,48 @@
+CodeQ\AssetSearch\Search\QueryBuilderInterface:
+  className: CodeQ\AssetSearch\Search\QueryBuilder
+
+CodeQ\AssetSearch\Indexer\AssetIndexerInterface:
+  className: 'CodeQ\AssetSearch\Indexer\AssetIndexer'
+
+CodeQ\AssetSearch\AssetExtraction\AssetExtractorInterface:
+  className: 'CodeQ\AssetSearch\AssetExtraction\IngestAttachmentAssetExtractor'
+
+CodeQ\AssetSearch\Driver\QueryInterface:
+  scope: prototype
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\QueryFactory'
+  factoryMethodName: createQuery
+
+CodeQ\AssetSearch\Driver\DocumentDriverInterface:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\DriverFactory'
+  factoryMethodName: createDocumentDriver
+
+CodeQ\AssetSearch\Driver\IndexerDriverInterface:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\DriverFactory'
+  factoryMethodName: createIndexerDriver
+
+CodeQ\AssetSearch\Driver\IndexDriverInterface:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\DriverFactory'
+  factoryMethodName: createIndexManagementDriver
+
+CodeQ\AssetSearch\Driver\RequestDriverInterface:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\DriverFactory'
+  factoryMethodName: createRequestDriver
+
+CodeQ\AssetSearch\Driver\SystemDriverInterface:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\DriverFactory'
+  factoryMethodName: createSystemDriver
+
+CodeQ\AssetSearch\ElasticSearchClient:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Client\ClientFactory'
+  factoryMethodName: create
+
+CodeQ\AssetSearch\Driver\AssetMappingBuilderInterface:
+  scope: singleton
+  factoryObjectName: 'CodeQ\AssetSearch\Factory\AssetMappingBuilderFactory'
+  factoryMethodName: createAssetMappingBuilder
