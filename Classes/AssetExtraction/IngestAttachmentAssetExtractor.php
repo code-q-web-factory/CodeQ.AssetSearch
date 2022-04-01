@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace CodeQ\AssetSearch\AssetExtraction;
 
+use Flowpack\ElasticSearch\Exception;
 use Neos\Flow\Annotations as Flow;
 use CodeQ\AssetSearch\Dto\AssetContent;
 use CodeQ\AssetSearch\ElasticSearchClient;
@@ -56,41 +57,48 @@ class IngestAttachmentAssetExtractor implements AssetExtractorInterface
 
         $extractedAsset = null;
 
-        $request = [
-            'pipeline' => [
-                'description' => 'Attachment Extraction',
-                'processors' => [
+        try {
+            $request = [
+                'pipeline' => [
+                    'description' => 'Attachment Extraction',
+                    'processors' => [
+                        [
+                            'attachment' => [
+                                'field' => 'neos_asset',
+                                'indexed_chars' => 100000,
+                                'ignore_missing' => true,
+                            ]
+                        ]
+                    ]
+                ],
+                'docs' => [
                     [
-                        'attachment' => [
-                            'field' => 'neos_asset',
-                            'indexed_chars' => 100000,
-                            'ignore_missing' => true,
+                        '_source' => [
+                            'neos_asset' => $this->getAssetContent($asset)
                         ]
                     ]
                 ]
-            ],
-            'docs' => [
-                [
-                    '_source' => [
-                        'neos_asset' => $this->getAssetContent($asset)
-                    ]
-                ]
-            ]
-        ];
+            ];
 
-        $result = $this->elasticsearchClient->request('POST', '_ingest/pipeline/_simulate', [], json_encode($request))->getTreatedContent();
+            $result = $this->elasticsearchClient->request('POST', '_ingest/pipeline/_simulate', [], json_encode($request))->getTreatedContent();
 
-        if (is_array($result)) {
-            $extractedAsset = Arrays::getValueByPath($result, 'docs.0.doc._source.attachment');
+            if (is_array($result)) {
+                $extractedAsset = Arrays::getValueByPath($result, 'docs.0.doc._source.attachment');
+            }
+
+            if (!is_array($extractedAsset)) {
+                $this->logger->error(sprintf('Error while extracting fulltext data from file "%s". See Elasticsearch error log line for details.', $asset->getResource()->getFilename()),
+                    LogEnvironment::fromMethodName(__METHOD__));
+            } else {
+                $this->logger->debug(sprintf('Extracted asset %s of type %s. Extracted %s characters of content', $asset->getResource()->getFilename(),
+                    $extractedAsset['content_type'] ?? '-no-content-type-', $extractedAsset['content_length'] ?? '0'), LogEnvironment::fromMethodName(__METHOD__));
+            }
+
+            return $this->buildAssetContentObject($extractedAsset);
+        } catch (Exception $e) {
+            $this->logger->warning(sprintf('The asset %s with size of %s bytes could not be ingested.', $asset->getResource()->getFilename(), $asset->getResource()->getFileSize()), LogEnvironment::fromMethodName(__METHOD__));
+            return $this->buildAssetContentObject([]);
         }
-
-        if (!is_array($extractedAsset)) {
-            $this->logger->error(sprintf('Error while extracting fulltext data from file "%s". See Elasticsearch error log line for details.', $asset->getResource()->getFilename()), LogEnvironment::fromMethodName(__METHOD__));
-        } else {
-            $this->logger->debug(sprintf('Extracted asset %s of type %s. Extracted %s characters of content', $asset->getResource()->getFilename(), $extractedAsset['content_type'] ?? '-no-content-type-', $extractedAsset['content_length'] ?? '0'), LogEnvironment::fromMethodName(__METHOD__));
-        }
-
-        return $this->buildAssetContentObject($extractedAsset);
     }
 
     /**
