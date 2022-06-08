@@ -35,12 +35,12 @@ CodeQ:
                 type: text
               'text':
                 type: text
-          'last_modified':
+          'lastModified':
             type: date
             format: 'date_time_no_millis'
           caption:
             type: keyword
-          'copyright_notice':
+          'copyrightNotice':
             type: keyword
           content:
             type: keyword
