@@ -15,10 +15,10 @@ CodeQ:
         maximumFileSize: 104857600
       mapping:
         properties:
-          'neos_fulltext_parts':
+          neos_fulltext_parts:
             type: object
             enabled: false
-          'neos_fulltext':
+          neos_fulltext:
             type: object
             properties:
               'h1':
@@ -35,12 +35,12 @@ CodeQ:
                 type: text
               'text':
                 type: text
-          'lastModified':
+          lastModified:
             type: date
             format: 'date_time_no_millis'
           caption:
             type: keyword
-          'copyrightNotice':
+          copyrightNotice:
             type: keyword
           content:
             type: keyword

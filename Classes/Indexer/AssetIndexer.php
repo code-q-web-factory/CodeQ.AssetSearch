@@ -155,7 +155,7 @@ class AssetIndexer extends AbstractAssetIndexer
         $data['title'] = $asset->getTitle() ?? $assetContent->getTitle();
         $data['caption'] = $asset->getCaption();
         $data['copyrightNotice'] = $asset->getCopyrightNotice();
-        $data['lastModified'] = $asset->getLastModified();
+        $data['lastModified'] = $asset->getLastModified() ? $asset->getLastModified()->format("Y-m-d\TH:i:sP") : null;
         $data['collections'] = $assetCollections;
         $data['tags'] = $assetTags;
         $data['contentLength'] = $assetContent->getContentLength();
