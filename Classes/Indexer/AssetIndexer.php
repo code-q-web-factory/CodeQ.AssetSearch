@@ -172,11 +172,13 @@ class AssetIndexer extends AbstractAssetIndexer
         $data['tags'] = $assetTags;
         $data['contentLength'] = $assetContent->getContentLength();
         $data['contentType'] = $assetContent->getContentType();
+        $data['filename'] = $asset->getResource()->getFilename();
 
+        $sanitizedFilename = str_replace(array('_', '-'), ' ', preg_replace('/\\.[^.\\s]{3,4}$/', '', $asset->getResource()->getFilename()));
         $fulltextIndexOfNode = [
             'h1' => trim($asset->getTitle() . ' ' . $assetContent->getTitle()),
             'h2' => $data['caption'],
-            'h3' => $data['copyrightNotice'],
+            'h3' => trim($sanitizedFilename . ' ' . $data['copyrightNotice']),
             'text' => $assetContent->getContent()
         ];
 
