@@ -39,6 +39,11 @@ abstract class AbstractMappingBuilder implements AssetMappingBuilderInterface
     protected $configurationManager;
 
     /**
+     * @var array
+     */
+    protected $defaultConfigurationPerType;
+
+    /**
      * Called by the Flow object framework after creating the object and resolving all dependencies.
      *
      * @param integer $cause Creation cause

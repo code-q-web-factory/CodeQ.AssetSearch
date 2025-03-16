@@ -15,6 +15,7 @@ namespace CodeQ\AssetSearch\Driver;
  */
 
 use CodeQ\AssetSearch\Exception;
+use JsonException;
 use Neos\Eel\ProtectedContextAwareInterface;
 use Neos\Utility\Arrays;
 
@@ -88,11 +89,11 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
 
     /**
      * {@inheritdoc}
-     * @throws \JsonException
+     * @throws JsonException
      */
     public function getRequestAsJson(): string
     {
-        return json_encode($this);
+        return json_encode($this, JSON_THROW_ON_ERROR);
     }
 
     /**
@@ -222,7 +223,7 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function jsonSerialize()
+    public function jsonSerialize(): mixed
     {
         return $this->prepareRequest();
     }
@@ -230,7 +231,7 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         if ($offset === null) {
             $this->request[] = $value;
@@ -242,7 +243,7 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->request[$offset]);
     }
@@ -250,7 +251,7 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->request[$offset]);
     }
@@ -258,7 +259,7 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         return $this->request[$offset] ?? null;
     }
@@ -281,7 +282,7 @@ abstract class AbstractQuery implements QueryInterface, \JsonSerializable, \Arra
      * @param string $methodName
      * @return boolean
      */
-    public function allowsCallOfMethod($methodName)
+    public function allowsCallOfMethod($methodName): bool
     {
         return true;
     }

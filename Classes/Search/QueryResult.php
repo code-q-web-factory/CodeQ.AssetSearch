@@ -14,10 +14,10 @@ namespace CodeQ\AssetSearch\Search;
  * source code.
  */
 
+use CodeQ\AssetSearch\Exception;
 use Neos\Eel\ProtectedContextAwareInterface;
 use Neos\Flow\Persistence\QueryInterface;
 use Neos\Flow\Persistence\QueryResultInterface;
-use Neos\Media\Domain\Model\Asset;
 use Neos\Media\Domain\Model\AssetInterface;
 
 class QueryResult implements QueryResultInterface, ProtectedContextAwareInterface
@@ -73,7 +73,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function current()
+    public function current(): mixed
     {
         $this->initialize();
 
@@ -83,17 +83,16 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function next()
+    public function next(): void
     {
         $this->initialize();
-
-        return next($this->assets);
+        next($this->assets);
     }
 
     /**
      * {@inheritdoc}
      */
-    public function key()
+    public function key(): mixed
     {
         $this->initialize();
 
@@ -103,7 +102,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function valid()
+    public function valid(): bool
     {
         $this->initialize();
 
@@ -113,7 +112,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function rewind()
+    public function rewind(): void
     {
         $this->initialize();
         reset($this->assets);
@@ -122,7 +121,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         $this->initialize();
 
@@ -132,7 +131,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function offsetGet($offset)
+    public function offsetGet($offset): mixed
     {
         $this->initialize();
 
@@ -142,7 +141,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->initialize();
         $this->assets[$offset] = $value;
@@ -151,7 +150,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
     /**
      * {@inheritdoc}
      */
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         $this->initialize();
         unset($this->assets[$offset]);
@@ -166,6 +165,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
         if (count($this->assets) > 0) {
             return array_values($this->assets)[0];
         }
+        return null;
     }
 
     /**
@@ -180,9 +180,12 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
 
     /**
      * {@inheritdoc}
+     * @return int
+     * @throws Exception
      * @throws \Flowpack\ElasticSearch\Exception
+     * @throws \Neos\Flow\Http\Exception
      */
-    public function count()
+    public function count(): int
     {
         if ($this->count === null) {
             $this->count = $this->elasticSearchQuery->getQueryBuilder()->count();
@@ -250,8 +253,8 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
      *
      * Can be used for example to access highlighting information.
      *
-     * @param AssetInterface $asset
-     * @return array the Elasticsearch hit, or NULL if it does not exist.
+     * @param  AssetInterface  $asset
+     * @return array|null the Elasticsearch hit, or NULL if it does not exist.
      * @api
      */
     public function searchHitForAsset(AssetInterface $asset): ?array
@@ -280,7 +283,7 @@ class QueryResult implements QueryResultInterface, ProtectedContextAwareInterfac
      * @param string $methodName
      * @return boolean
      */
-    public function allowsCallOfMethod($methodName)
+    public function allowsCallOfMethod($methodName): bool
     {
         return true;
     }
